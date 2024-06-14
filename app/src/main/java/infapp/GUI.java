@@ -11,5 +11,13 @@ public class GUI {
         JFrame frame = new JFrame();
         frame.setSize(600, 600);
         frame.setVisible(true);
+        initComponent();
+
+    }
+
+    private static void initComponent() {
+
+        System.out.println("Hello");
+
     }
 }

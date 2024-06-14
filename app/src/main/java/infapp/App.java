@@ -12,5 +12,6 @@ public class App {
         System.out.println(new App().getGreeting());
         GUI fifi = new GUI();
         fifi.showStuff();
+        ;
     }
 }
