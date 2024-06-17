@@ -3,8 +3,12 @@ package infapp;
 import javax.swing.JFrame;
 
 public class GUI {
-    public static void main(String[] args) {
-
+    public GUI() {
+        try {
+            showStuff();
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
     }
 
     public void showStuff() {
@@ -20,4 +24,5 @@ public class GUI {
         System.out.println("Hello");
 
     }
+
 }
