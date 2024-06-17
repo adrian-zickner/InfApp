@@ -1,4 +1,4 @@
-package InfApp.app.src.main.java.infapp;
+package infapp;
 
 import javax.swing.JFrame;
 
