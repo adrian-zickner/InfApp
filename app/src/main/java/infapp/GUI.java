@@ -19,6 +19,16 @@ public class GUI {
 
     }
 
+    public void clickNeueNotiz(){
+
+    }
+    public void clickNotizSpeichern(){
+
+    }
+    private void zeigeNotiz(){
+        
+    }
+
     private static void initComponent() {
 
         System.out.println("Hello");
