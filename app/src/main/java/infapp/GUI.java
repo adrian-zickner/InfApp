@@ -2,10 +2,16 @@ package infapp;
 
 import javax.swing.JFrame;
 
+
+//Login l = new Login();
+
 public class GUI {
+    Login l = new Login();
+
     public GUI() {
         try {
-            showStuff();
+            
+           l.showStuff();
         } catch (Exception e) {
             // TODO: handle exception
         }

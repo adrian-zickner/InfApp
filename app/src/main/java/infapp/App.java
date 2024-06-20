@@ -42,7 +42,8 @@ public class App {
     public static void main(String[] args) {
         System.out.println(new App().getGreeting());
         GUI fifi = new GUI();
-        fifi.showStuff();
+        Login l = new Login();
+        //fifi.showStuff();
         ;
     }
 }
