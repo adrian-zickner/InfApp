@@ -20,7 +20,7 @@ public class Login {
 
 
 
-        JTextField usernameTextfield = new JTextField("");
+        JTextField usernameTextfield = new JTextField("User eingeben");
         usernameTextfield.setBounds(250, 250, 100, 20);
 
         usernameTextfield.setBorder(blackline);
@@ -30,7 +30,8 @@ public class Login {
 
         loginButton.addActionListener((ActionListener) new ActionListener(){  
             public void actionPerformed(ActionEvent e){  
-                        usernameTextfield.setText("Welcome.");  
+                        String UserValue = usernameTextfield.getText();
+                        checkUsername(UserValue);
                     }  
                 });  
 
@@ -42,6 +43,14 @@ public class Login {
         frame.setVisible(true);
 
 
+
+    }
+    void checkUsername(String Username){
+        if(Username == "Marci"){
+            System.out.println("Login complete!");
+        }else{
+            System.err.println("No real Username");
+        }
 
     }
 
