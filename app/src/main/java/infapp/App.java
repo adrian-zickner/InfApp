@@ -42,8 +42,9 @@ public class App {
     public static void main(String[] args) {
         System.out.println(new App().getGreeting());
         GUI fifi = new GUI();
-        //Login l = new Login();
-        fifi.setVisible(true);
+        Login l = new Login();
+        l.showStuff();
+       // fifi.setVisible(true);
         ;
     }
 }

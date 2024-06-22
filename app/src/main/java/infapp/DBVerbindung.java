@@ -37,4 +37,20 @@ public class DBVerbindung {
 
         return rs;
     }
+
+    /*public PreparedStatement prepareStatement(String abfrage) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'prepareStatement'");
+    }*/
+
+    
+    public void prepareAndExecuteStatement(String sql, Object... parameters) throws SQLException {
+        try (PreparedStatement pstmt = verbindung.prepareStatement(sql)) {
+            for (int i = 0; i < parameters.length; i++) {
+                pstmt.setObject(i + 1, parameters[i]);
+            }
+            pstmt.executeUpdate();
+        }
+    }
+
 }
