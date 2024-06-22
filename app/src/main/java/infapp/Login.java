@@ -8,13 +8,15 @@ import java.sql.*;
 public class Login {
 
     private DBVerbindung verbindung;
-    
+    GUI gui = new GUI();
+    int userkey = 0;
     
 
     public void showStuff() {
 
+
         try {
-            this.verbindung = new DBVerbindung("https://panel.zickner.com/", "zadmin_notizapp", "zadmin_sql", "pequmady3emy6e7u");
+            this.verbindung = new DBVerbindung("localhost", "projekt", "root", "");
             this.verbindung.open();
             
         } catch (ClassNotFoundException | SQLException ex) {
@@ -36,9 +38,11 @@ public class Login {
 
         JTextField usernameTextfield = new JTextField("User eingeben");
         usernameTextfield.setBounds(250, 250, 100, 20);
+        
 
-        JTextField passwordTextField = new JTextField("Passw eingeben");
+        JPasswordField passwordTextField = new JPasswordField("Passw eingeben");
         passwordTextField.setBounds(250, 300, 100, 20);
+                
 
         usernameTextfield.setBorder(blackline);
 
@@ -50,16 +54,44 @@ public class Login {
 
         loginButton.addActionListener((ActionListener) new ActionListener(){  
             public void actionPerformed(ActionEvent e){  
+                        try {
+                           verbindung.open();
+                        } catch (ClassNotFoundException | SQLException e1) {
+                           // TODO Auto-generated catch block
+                           e1.printStackTrace();
+                        }
+
+
                         String UserValue = usernameTextfield.getText();
+                        char[] password = passwordTextField.getPassword();
+
+                        String PasswValue = new String(password);
+
+                        if (verbindung.checkUser(UserValue, PasswValue)) {
+                            frame.dispose();
+                            gui.setVisible(true);
+                            
+                        }else{
+                            JOptionPane.showMessageDialog(frame, "Password oder Username falsch!");
+                        }
                     }  
                 });  
 
         registerUser.addActionListener((ActionListener) new ActionListener(){  
             public void actionPerformed(ActionEvent e){  
-                        String UserValue = usernameTextfield.getText();
-                        String PasswdValue = passwordTextField.getText();
+                        try {
+                            verbindung.open();
+                        } catch (ClassNotFoundException | SQLException e1) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        }
 
-                        registerUser(UserValue, PasswdValue);
+                        String UserValue = usernameTextfield.getText();
+                        char[] password = passwordTextField.getPassword();
+
+                        String PasswValue = new String(password);
+                        userkey++;
+                        registerUser(UserValue, PasswValue);
 
 
 
@@ -81,14 +113,31 @@ public class Login {
 
 
     }
-    public void registerUser(String username, String password) {
-        String sql = "INSERT INTO users (Username, Password) VALUES (?, ?)";
+
+
+
+
+
+
+    public void registerUser( String username, String password) {
+
+
+        JFrame error = new JFrame(); // Declare the frame variable
+        if (verbindung.checkUser(username, password)) {
+            JOptionPane.showMessageDialog(error, "Username bereits registriert!");
+            return;
+        }
+        
+         
+
+
+        String sql = "INSERT INTO user(username, passw) VALUES (?, ?)";
         try {
             verbindung.prepareAndExecuteStatement(sql, username, password);
-            System.out.println("User registered successfully!");
+            JOptionPane.showMessageDialog(error, "User erfolgreich registriert!");
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("Error while registering user.");
+            System.out.println("Fehler bei Registrierung!");
         } finally {
             try {
                 verbindung.close();
@@ -96,6 +145,7 @@ public class Login {
                 e.printStackTrace();
             }
         }
+            
     }
 
 
