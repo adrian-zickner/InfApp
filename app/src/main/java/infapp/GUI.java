@@ -153,8 +153,8 @@ public class GUI extends javax.swing.JFrame {
             try {
                 while (resultSet.next()) {
                     id = resultSet.getInt("N_ID");
-                    String titel = resultSet.getString("Titel");
-                    NotizFeld.setText(titel);
+                    String inhalt = resultSet.getString("Inhalt");
+                    NotizFeld.setText(inhalt);
                 }
             } catch (SQLException e) {
                 // TODO Auto-generated catch block
@@ -221,9 +221,9 @@ public class GUI extends javax.swing.JFrame {
 
     public void saveNotiz(String inhalt) {
 
-        String sql = "UPDATE table_name SET column1 = value1, column2 = value2,WHERE condition; (Titel, Inhalt, Kategorie) VALUES (?, ?, ?)";
+        String sql = "UPDATE notiz SET inhalt = ?,WHERE N_ID = ?;";
         try {
-            verbindung.prepareAndExecuteStatement(sql, "null", inhalt, "null");
+            verbindung.prepareAndExecuteStatement(sql, inhalt, id);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Fehler bei Ezeugung!");
