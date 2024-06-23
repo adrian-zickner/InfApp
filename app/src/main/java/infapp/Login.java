@@ -131,7 +131,7 @@ public class Login {
          
 
 
-        String sql = "INSERT INTO user(username, passw) VALUES (?, ?)";
+        String sql = "INSERT INTO user(username, password) VALUES (?, ?)";
         try {
             verbindung.prepareAndExecuteStatement(sql, username, password);
             JOptionPane.showMessageDialog(error, "User erfolgreich registriert!");

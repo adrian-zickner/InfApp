@@ -5,7 +5,11 @@
  */
 package infapp;
 
+import java.sql.SQLException;
+import java.sql.ResultSet;
+
 import javax.swing.DefaultListModel;
+import javax.swing.event.ListSelectionEvent;
 
 /**
  *
@@ -13,11 +17,31 @@ import javax.swing.DefaultListModel;
  */
 public class GUI extends javax.swing.JFrame {
 
+    DBVerbindung verbindung;
+
     /**
      * Creates new form GUI
      */
+    private DefaultListModel<String> model;
     public GUI() {
+        try {
+            this.verbindung = new DBVerbindung("localhost", "projekt", "root", "");
+            this.verbindung.open();
+            
+        } catch (ClassNotFoundException | SQLException ex) {
+            System.out.println("Verbindung fehlerhaft!");
+            // TODO: handle exception
+        }
+
+
+
+
+
         initComponents();
+        model = new DefaultListModel<>();
+        NotizListe.setModel(model);
+
+       
     }
 
     /**
@@ -33,6 +57,7 @@ public class GUI extends javax.swing.JFrame {
         btnSpeichern = new javax.swing.JButton();
         btnBearbeiten = new javax.swing.JButton();
         btnLoeschen = new javax.swing.JButton();
+        btnNeu = new javax.swing.JButton();
         NotizPanel = new javax.swing.JScrollPane();
         NotizListe = new javax.swing.JList<>();
 
@@ -43,6 +68,25 @@ public class GUI extends javax.swing.JFrame {
                 NotizFeldActionPerformed(evt);
             }
         });
+
+        NotizListe.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                try {
+                    NotizListeValueChanged(evt);
+                } catch (SQLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+
+
+
 
         btnSpeichern.setText("Speichern");
         btnSpeichern.addActionListener(new java.awt.event.ActionListener() {
@@ -65,12 +109,22 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
-        NotizListe.setModel(new javax.swing.AbstractListModel<String>() {
+
+        btnNeu.setText("Neu");
+        btnNeu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNeuActionPerformed(evt);
+            }
+        });
+        NotizPanel.setViewportView(NotizListe);
+        /* 
+        NotizListe.setModel(new javax.swing.DefaultListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        NotizPanel.setViewportView(NotizListe);
+        NotizPanel.setViewportView(NotizListe);*/
+
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -87,7 +141,8 @@ public class GUI extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(btnBearbeiten)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnLoeschen)))
+                        .addComponent(btnLoeschen)
+                        .addComponent(btnNeu)))
                 .addGap(21, 21, 21))
         );
         layout.setVerticalGroup(
@@ -101,29 +156,128 @@ public class GUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnLoeschen)
                     .addComponent(btnBearbeiten)
-                    .addComponent(btnSpeichern))
+                    .addComponent(btnSpeichern)
+                    .addComponent(btnNeu))
                 .addContainerGap(28, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>                        
 
+    protected void NotizListeValueChanged(ListSelectionEvent evt) throws SQLException, ClassNotFoundException {
+        verbindung.open();
+        int selectedIndex = NotizListe.getSelectedIndex();
+    
+        if (selectedIndex != 1) {
+            
+            ResultSet resultSet = verbindung.fuehreAbfrageAus("SELECT * FROM notiz");
+            try {
+                while (resultSet.next()) {
+                    int id = resultSet.getInt("N_ID");
+                    String titel = resultSet.getString("Titel");
+                    NotizFeld.setText(titel);
+                }
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            
+            resultSet.close(); // Wichtig: ResultSet nach Gebrauch schließen
+        }
+    }
+
     private void NotizFeldActionPerformed(java.awt.event.ActionEvent evt) {                                          
         // TODO add your handling code here:
-    }                                         
+    }            
 
-    private void btnLoeschenActionPerformed(java.awt.event.ActionEvent evt) {                                            
-        DefaultListModel selectedIndex = new DefaultListModel<>();
-        selectedIndex.removeElement(NotizListe.getSelectedIndex());
-    }                                           
+    private void btnLoeschenActionPerformed(java.awt.event.ActionEvent evt) {
+        // Zugriff auf das aktuelle Modell der NotizListe
+        
+    
+        // Überprüfen, ob ein Element ausgewählt ist
+        int selectedIndex = NotizListe.getSelectedIndex();
+        if (selectedIndex != -1) {
+            // Element aus dem Modell entfernen
+            model.remove(selectedIndex);
+        }
+    }
+
+    
+
 
     private void btnBearbeitenActionPerformed(java.awt.event.ActionEvent evt) {                                              
         // TODO add your handling code here:
     }                                             
 
-    private void btnSpeichernActionPerformed(java.awt.event.ActionEvent evt) {                                             
-        // TODO add your handling code here:
-    }                                            
+    private void btnSpeichernActionPerformed(java.awt.event.ActionEvent evt) {
+        
+    } 
+    private void btnNeuActionPerformed(java.awt.event.ActionEvent evt) {
+        
+        // Hinzufügen einer neuen Notiz zur Liste
+        String text = NotizFeld.getText();
+        if (!text.isEmpty()) {
+            model.addElement(text);
+            NotizFeld.setText(""); // Textfeld nach dem Speichern leeren
+            createNotiz(text);
+        }
+
+
+
+
+    }                
+
+    public void createNotiz( String titel) {
+      
+         
+
+
+        String sql = "INSERT INTO notiz(Titel, Inhalt, Kategorie) VALUES (?, ?, ?)";
+        try {
+            verbindung.prepareAndExecuteStatement(sql, titel, "null", "null");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Fehler bei Ezeugung!");
+        } finally {
+            try {
+                verbindung.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+            
+    }
+/*
+    private void getNotiz() {
+        String sql = "SELECT Titel FROM notiz";
+        try {
+            ResultSet resultSet = verbindung.executeQuery(sql);
+            while (resultSet.next()) {
+                String titel = resultSet.getString("Titel");
+                model.addElement(titel);
+            }
+        } catch (SQLException e) {
+            System.out.println("Fehler beim Laden der Titel aus der Datenbank!");
+            e.printStackTrace();
+        } finally {
+            try {
+                verbindung.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }*/
+
+    
+    
+
+
+
+
+
+
+
+
 
     /**
      * @param args the command line arguments
@@ -167,5 +321,6 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JButton btnBearbeiten;
     private javax.swing.JButton btnLoeschen;
     private javax.swing.JButton btnSpeichern;
+    private javax.swing.JButton btnNeu;
     // End of variables declaration                   
 }

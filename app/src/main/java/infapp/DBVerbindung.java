@@ -29,26 +29,22 @@ public class DBVerbindung {
 
         verbindung.close();
     }
-
-    public ResultSet fuehreAbfrageAus(String sql, String... params) {
-        try (PreparedStatement pstmt = verbindung.prepareStatement(sql)) {
-            for (int i = 0; i < params.length; i++) {
-                pstmt.setString(i + 1, params[i]);
-            }
-            return pstmt.executeQuery();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
+    
+    public ResultSet fuehreAbfrageAus(String sql) throws SQLException {
+        Statement sqlStatement = verbindung.createStatement();
+        ResultSet rs = sqlStatement.executeQuery(sql);
+        return rs;
+        
+        
     }
-
-    /*public PreparedStatement prepareStatement(String abfrage) {
+/* 
+    public PreparedStatement prepareStatement(String abfrage) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'prepareStatement'");
     }*/
 
     public boolean checkUser(String username, String password) {
-        String query = "SELECT COUNT(*) FROM user WHERE username = ? AND passw = ?";
+        String query = "SELECT COUNT(*) FROM user WHERE username = ? AND password = ?";
         try (PreparedStatement pstmt = verbindung.prepareStatement(query)) {
             pstmt.setString(1, username);
             pstmt.setString(2, String.valueOf(password));
@@ -62,6 +58,9 @@ public class DBVerbindung {
         }
         return false;
     }
+
+
+    
 
     
     public void prepareAndExecuteStatement(String sql, Object... parameters) throws SQLException {
