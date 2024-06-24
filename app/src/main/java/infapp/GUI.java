@@ -19,7 +19,7 @@ import javax.swing.event.ListSelectionEvent;
 public class GUI extends javax.swing.JFrame {
 
     DBVerbindung verbindung;
-    private int id;
+    private int id = 1;
     /**
      * Creates new form GUI
      */
@@ -76,7 +76,12 @@ public class GUI extends javax.swing.JFrame {
         btnSpeichern.setText("Speichern");
         btnSpeichern.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSpeichernActionPerformed(evt);
+                try {
+                    btnSpeichernActionPerformed(evt);
+                } catch (ClassNotFoundException | SQLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -180,12 +185,12 @@ public class GUI extends javax.swing.JFrame {
         }
     }
 
-    private void btnSpeichernActionPerformed(java.awt.event.ActionEvent evt) {
+    private void btnSpeichernActionPerformed(java.awt.event.ActionEvent evt) throws ClassNotFoundException, SQLException {
+        verbindung.open();
 
         String text = NotizFeld.getText();
         if (!text.isEmpty()) {
-            model.addElement(text);
-            saveNotiz(text);
+            saveNotiz(text, id);
         }
     }
 
@@ -219,9 +224,9 @@ public class GUI extends javax.swing.JFrame {
 
     }
 
-    public void saveNotiz(String inhalt) {
+    public void saveNotiz(String inhalt, int id) {
 
-        String sql = "UPDATE notiz SET inhalt = ?,WHERE N_ID = ?;";
+        String sql = "UPDATE notiz SET Inhalt = ? WHERE N_ID = ?;";
         try {
             verbindung.prepareAndExecuteStatement(sql, inhalt, id);
         } catch (SQLException e) {
