@@ -14,7 +14,7 @@ import javax.swing.event.ListSelectionEvent;
 
 /**
  *
- * @author erik.fendrik
+ * 
  */
 public class GUI extends javax.swing.JFrame {
 
